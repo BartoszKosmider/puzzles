@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CreatePuzzles : MonoBehaviour
@@ -16,15 +18,22 @@ public class CreatePuzzles : MonoBehaviour
 
 	private void ChangePuzzlesPositions()
 	{
-		var puzzles = GameObject.FindGameObjectsWithTag(GlobalData.PuzzleTag);
+		var puzzles = GameObject.FindGameObjectsWithTag(GlobalData.PuzzleTag).ToList();
 		var random = new System.Random();
-		for (int i = 0; i < 100; i++)
+		var indexToMove = 15;
+		for (int i = 0; i < 1000; i++)
 		{
-			var random1 = random.Next(0, GlobalData.CubesPerAxis * GlobalData.CubesPerAxis);
-			var random2 = random.Next(0, GlobalData.CubesPerAxis * GlobalData.CubesPerAxis);
+			indexToMove = positions.FindIndex(x => x == 15);
+			var puzzle1 = puzzles.FirstOrDefault(p => p.name == GetPuzzleName(15));
+			var newIndex = Test[indexToMove].OrderBy(x => random.Next()).FirstOrDefault();
 
-			var puzzle1 = puzzles[random1];
-			var puzzle2 = puzzles[random2];
+			var puzzlePosition = positions[newIndex];
+			var puzzle2 = puzzles.FirstOrDefault(p => p.name == GetPuzzleName(puzzlePosition));
+
+			var temp = positions[indexToMove];
+			positions[indexToMove] = positions[newIndex];
+			positions[newIndex] = temp;
+
 			var tempPos = puzzle1.transform.position;
 			puzzle1.transform.position = puzzle2.transform.position;
 			puzzle2.transform.position = tempPos;
@@ -110,4 +119,29 @@ public class CreatePuzzles : MonoBehaviour
 	{
 		return $"Puzzle:{index}";
 	}
+
+	private Dictionary<int, List<int>> Test = new Dictionary<int, List<int>>
+	{
+		{ 0, new List<int>() { 1, 4 } },
+		{ 1, new List<int>() { 0, 2, 5 } },
+		{ 2, new List<int>() { 1, 3, 6 } },
+		{ 3, new List<int>() { 2, 7 } },
+		{ 4, new List<int>() { 0, 5, 8 } },
+		{ 5, new List<int>() { 1, 4, 6, 9 } },
+		{ 6, new List<int>() { 2, 5, 7, 10 } },
+		{ 7, new List<int>() { 3, 6, 11 } },
+		{ 8, new List<int>() { 4, 9, 12 } },
+		{ 9, new List<int>() { 5, 8, 10, 13 } },
+		{ 10, new List<int>() { 6, 9, 11, 14 } },
+		{ 11, new List<int>() { 7, 10, 15 } },
+		{ 12, new List<int>() { 8, 13 } },
+		{ 13, new List<int>() { 9, 12, 14 } },
+		{ 14, new List<int>() { 10, 13, 15 } },
+		{ 15, new List<int>() { 11, 14 } },
+	};
+
+	private List<int> positions = new List<int>()
+	{
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+	};
 }
